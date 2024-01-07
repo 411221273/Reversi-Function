@@ -1,0 +1,69 @@
+#include <stdio.h>
+
+#define MAX_N 10
+
+int maze[MAX_N][MAX_N] = {
+  {1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+  {0, 0, 0, 1, 1, 0, 1, 1, 0, 1},
+  {1, 0, 1, 1, 0, 0, 0, 0, 0, 1},
+  {1, 0, 0, 0, 0, 1, 0, 1, 0, 1},
+  {1, 1, 1, 0, 1, 1, 0, 1, 1, 1},
+  {1, 0, 1, 1, 1, 0, 0, 1, 0, 1},
+  {1, 0, 0, 0, 0, 0, 1, 1, 0, 0},
+  {1, 0, 1, 1, 1, 1, 1, 0, 0, 1},
+  {1, 0, 0, 0, 1, 0, 0, 0, 1, 1},
+  {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
+};
+
+void printMaze() {
+    for (int i = 0; i < MAX_N; i++) {
+        for (int j = 0; j < MAX_N; j++) {
+            printf("%c ", maze[i][j] == 1 ? '#' : maze[i][j] == 0 ? '.' : ' ');
+        }
+        printf("\n");
+    }
+}
+
+int solveMaze(int x, int y, int exitX, int exitY) {
+    if (x < 0 || x >= MAX_N || y < 0 || y >= MAX_N || maze[x][y] != 0) {
+        return 0;  // 超出邊界或遇到牆壁
+    }
+
+    if (x == exitX && y == exitY) {
+        maze[x][y] = 'x';  // 標記老鼠的行走路徑
+        return 1;  // 已到達出口
+    }
+
+    maze[x][y] = 'x';  // 標記老鼠的行走路徑
+
+    // 嘗試上下左右四個方向移動
+    if (solveMaze(x - 1, y, exitX, exitY) ||
+        solveMaze(x + 1, y, exitX, exitY) ||
+        solveMaze(x, y - 1, exitX, exitY) ||
+        solveMaze(x, y + 1, exitX, exitY)) {
+        return 1;  // 老鼠找到了通往出口的路徑
+    }
+
+    // 沒有找到通往出口的路徑，回溯，將該位置標記為未走過
+    maze[x][y] = 0;
+    return 0;
+}
+
+int main() {
+    int startX, startY, exitX, exitY;
+
+    printf("請輸入老鼠的起始位置 (x y): ");
+    scanf("%d %d", &startX, &startY);
+
+    printf("請輸入迷宮出口的位置 (x y): ");
+    scanf("%d %d", &exitX, &exitY);
+
+    if (solveMaze(startX, startY, exitX, exitY)) {
+        printf("老鼠找到了通往出口的路徑\n");
+        printMaze();
+    } else {
+        printf("老鼠找不到通往出口的路徑\n");
+    }
+
+    return 0;
+}
